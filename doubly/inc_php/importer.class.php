@@ -420,7 +420,16 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		
 		$arrSettings = UniteFunctionsDOUBLY::getVal($arr, "settings");
 		
-		$arrSettings[$taxonomyName."_posttype"] = array("post");
+		$arrPostType = UniteFunctionsDOUBLY::getVal($arrSettings, $taxonomyName."_posttype");
+		
+		if(is_string($arrPostType))
+			$arrPostType = array($arrPostType);
+		
+		if(is_array($arrPostType) && in_array("product", $arrPostType))
+			$arrSettings[$taxonomyName."_posttype"] = array("product");
+		else
+			$arrSettings[$taxonomyName."_posttype"] = array("post");
+		
 		$arrSettings[$taxonomyName."_taxonomy"] = array("category");
 		unset($arrSettings[$taxonomyName."_include_specific"]);
 		unset($arrSettings[$taxonomyName."_includeby"]);
@@ -753,8 +762,8 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 				//put elementor url
 				if($isImageID == true){
 					
-					if(array_key_exists("url", $arr) && empty($arr["url"])){
-						
+					if(array_key_exists("url", $arr)){
+														
 						$url = UniteFunctionsWPDOUBLY::getImageUrlByID($value);
 						
 						$arr["url"] = $url;
@@ -790,14 +799,14 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		//----- serialize -----
 		
 		$arr = UniteFunctionsDOUBLY::maybeUnserialize($str);
-		
+				
 		if(is_array($arr)){
-			
+						
 			if($isDebugArrays)
 				$this->debug("meta_array_before",$key, $arr);
-			
+						
 			$arr = $this->convertStringsArray($arr);
-			
+						
 			if($isDebugArrays)
 				$this->debug("meta_array_after",$key, $arr);
 			
@@ -845,17 +854,18 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 	 * modify meta array, check for json or serialization
 	 */
 	private function modifyMetaArray($arrMeta){
-		
+				
 		if(empty($arrMeta))
 			return($arrMeta);
 			
-		if(is_array($arrMeta) == false)
+		if(is_array($arrMeta) == false){
 			return($arrMeta);
+		}
 		
 		foreach($arrMeta as $key=>$value){
 			
 			$this->isElementorData = ($key == "_elementor_data");
-			
+						
 			$value = $this->modifyMetaString($key, $value);
 			
 			$arrMeta[$key] = $value;
@@ -1063,7 +1073,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		
 		//check still if exists
 		$isTaxonomyExists = taxonomy_exists($taxonomy);
-			
+		
 		if($isTaxonomyExists == false){
 			
 			$name = UniteFunctionsDOUBLY::sanitizeFilenameForOutput($name);
@@ -1222,7 +1232,17 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 			
 			$parentID = $this->checkImportTermParents($termKey);
 			
-			$objTerm = $this->importTerm($termKey);
+			try{
+				
+				$objTerm = $this->importTerm($termKey);
+				
+			}catch(Exception $e){
+
+				if(defined("DOUBLE_ALLOW_NOTAX_TERMS_IMPORT"))
+					continue;
+				else
+					throw($e);
+			}
 			
 			if(empty($objTerm))
 				UniteFunctionsDOUBLY::throwError("Term not imported: $termKey");
@@ -1236,7 +1256,8 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 			$response = wp_set_post_terms($postID, array($termID), $taxonomy, true);
 			
 			if(is_wp_error($response) || empty($response))
-				UniteFunctionsDOUBLY::throwError("failed to set post terms");			
+				UniteFunctionsDOUBLY::throwError("failed to set post terms");
+			
 		}
 		
 		//remove the uncategorized from post, if not exists inside all the terms

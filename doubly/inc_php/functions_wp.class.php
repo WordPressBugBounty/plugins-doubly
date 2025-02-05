@@ -210,12 +210,7 @@ class UniteFunctionsWPDOUBLY{
 		if(isset(self::$arrCacheUrlImages[$imageID]))
 			return(self::$arrCacheUrlImages[$imageID]);
 		
-		$arrImage = wp_get_attachment_image_src($imageID, 'full');
-		
-		if(empty($arrImage))
-			return(null);
-
-		$urlImage = $arrImage[0];
+		$urlImage = wp_get_attachment_url($imageID);
 		
 		self::$arrCacheUrlImages[$imageID] = $urlImage;
 		

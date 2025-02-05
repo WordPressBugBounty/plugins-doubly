@@ -98,6 +98,13 @@ Work faster with bulk actions. Copy multiple posts at a time with just one click
 
 == Changelog ==
 
+
+Version 1.0.46 - 05/02/2025
+
+* Fix: fixed font importing
+* Change: updated freemius version.
+
+
 Version 1.0.45 - 12/09/2024
 
 * Feature: added error message if copy containers where no option to see them in elementor

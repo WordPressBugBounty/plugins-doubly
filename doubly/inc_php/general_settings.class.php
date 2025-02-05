@@ -81,6 +81,7 @@ class Doubly_PluginGeneralSettings{
 			$settings->addSelect("unlimited_elements_add_widgets", $arrItems, "Unlimited Elements Integration <br>Include Widgets with copy content", "add", $params);
 		}
 		
+		
 		// ------ Front End Copy free ------------
 		
 		if(GlobalsDOUBLY::$isProVersion == false){
@@ -97,7 +98,7 @@ class Doubly_PluginGeneralSettings{
 			
 			$settings->addSelect("enabled_elementor_front_copy_free", $arrItems, __("Enable Elementor Front Section Copy (pro)","doubly"), "no", $params);
 		}
-		
+
 		
 		return($settings);
 	}

@@ -52,8 +52,21 @@ class Doubly_PluginCommon{
 	    $urlGetContent = HelperDOUBLY::getUrlAjax("get_copied_content","postid=$postID");
 	    
 	    $urlTestImport = HelperDOUBLY::getUrlAjax("import_content_test");
+
+	   	$urlShowExport = HelperDOUBLY::getUrlAjax("show_export_data","postid=$postID");
 	    
+	   	//empty
+	   	
+	   	$arrMenu = array();
+	    $arrMenu["title"] = __('Doubly Rules!',"doubly");
+	    $arrMenu["id"] = __('empty_menu_link',"doubly");
+	    $arrMenu["href"] = "javascript:void(0)";
+	    $arrMenu["parent"] = "doubly_others";
 	    
+	    $admin_bar->add_menu($arrMenu);		
+	   	
+	   	//show post data
+	   	
 	    $arrMenu = array();
 	    $arrMenu["title"] = __('Show Post Data',"doubly");
 	    $arrMenu["id"] = __('doubly_show_data',"doubly");
@@ -63,11 +76,22 @@ class Doubly_PluginCommon{
 	    $admin_bar->add_menu($arrMenu);		
 		
 	    
+	    //show post export data
+	    
+	    $arrMenu = array();
+	    $arrMenu["title"] = __('Show Post Export',"doubly");
+	    $arrMenu["id"] = __('doubly_show_export',"doubly");
+	    $arrMenu["href"] = $urlShowExport;
+	    $arrMenu["parent"] = "doubly_others";
+	    
+	    $admin_bar->add_menu($arrMenu);		
+	    
+	    
 	    //other content
 	    
 	    $arrMenu = array();
-	    $arrMenu["title"] = __('Get Content Link',"doubly");
-	    $arrMenu["id"] = __('doubly_get_content',"doubly");
+	    $arrMenu["title"] = __('Test Copied Content',"doubly");
+	    $arrMenu["id"] = "doubly_test_content";
 	    $arrMenu["href"] = $urlGetContent;
 	    $arrMenu["parent"] = "doubly_others";
 	    

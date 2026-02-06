@@ -148,6 +148,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		$randomString = UniteFunctionsDOUBLY::getRandomString(10);
 		
 		//set import zip file for copy
+		
 		$this->filepathImportZipFile = $pathImportZips."doubly_import_{$randomString}.zip";
 		
 		//create import content files folder
@@ -448,15 +449,21 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		//check if same domain - no need to convert nothing if do
 		if($this->param_isSameDomain == true)
 			return($arr);
-		
+					
 		$alias = $this->getUEWidgetAlias($arr);
 				
 		if(empty($alias))
 			return($arr);
 		
 		//get the special key - post list name
-		
+			
 		$postListName = UniteFunctionsDOUBLY::getVal($arr, "ue_post_list_name");
+		
+		$multisourceName = UniteFunctionsDOUBLY::getVal($arr, "ue_multisource_param_name");
+		
+		if(!empty($multisourceName)){
+			$postListName = $multisourceName."_posts";
+		}
 		
 		if(empty($postListName))
 			return($arr);
@@ -500,7 +507,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		if($source == "manual")
 			unset($arrSettings[$postListName."_source"]);
 		
-			
+		
 		$arrSettings[$postListName."_posttype"] = array("post");
 		
 		//unset other settings
@@ -517,7 +524,8 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 			if(strpos($key, $postListName."_") !== false)
 				unset($arrSettings[$key]);
 		}
-				
+
+		
 		$arr["settings"] = $arrSettings;
 		
 		return($arr);					
@@ -1708,6 +1716,8 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 	 */
 	private function importByPosts(){
 		
+		//dmp("the content 2!");dmp($this->arrContent);exit();
+		
 		$arrPosts = UniteFunctionsDOUBLY::getVal($this->arrContent, "posts");
 		
 		if(empty($arrPosts))
@@ -1719,7 +1729,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		$this->numLastImportedPosts = count($arrPosts);
 		
 		foreach($arrPosts as $post){
-						
+					
 			$this->importPost($post);
 			
 			//get post type
@@ -1912,9 +1922,9 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 			return(false);
 		
 		//check if widgets available by content
-			
+		
 		$arrWidgets = UniteFunctionsDOUBLY::getVal($this->arrContent, "widgets");
-			
+				
 		if(empty($arrWidgets))
 			return(false);
 			
@@ -2463,6 +2473,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 	 * import by content array
 	 */
 	private function importByContentArray($arrContent){
+
 				
 		$this->arrContent = $arrContent;
 		

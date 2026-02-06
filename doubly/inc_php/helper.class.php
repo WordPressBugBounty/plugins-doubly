@@ -1119,10 +1119,9 @@ class HelperDOUBLY{
 			return(false);
 		
 		$isAllowed = apply_filters("doubly_front_copy_page_allowed", $post);
-
+		
 		if($isAllowed === true)
 			return(true);
-		
 		
 		$postType = $post->post_type;
 				

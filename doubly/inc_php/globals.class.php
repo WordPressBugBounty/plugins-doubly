@@ -46,6 +46,8 @@ class GlobalsDOUBLY{
 	
 	const URL_WEBSITE = "https://doubly.pro";
 	
+	const GUTENBERG_UE_PREFIX = "unlimitedelements/ue-";
+	
 	public static $capability = "manage_options";
 	public static $pathPlugin;
 	public static $pathBase;

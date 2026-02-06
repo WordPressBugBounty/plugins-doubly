@@ -83,6 +83,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 	private $isImageConverted = false;
 	
 	private $arrExportedPosts = array();
+
 	
 	
 	/**
@@ -907,7 +908,6 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		
 		$this->arrExportUEWidgets[$alias] = true;
 		
-		
 		if(self::DEBUG_CHECK_WIDGETS == true){
 			dmp("widget found - $alias");
 		}
@@ -1392,6 +1392,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 	 */
 	private function modifyMeta_handleElementorUEPostList($arr){
 		
+		
 		if($this->isUEInstalled == false)
 			return($arr);
 			
@@ -1399,7 +1400,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		
 		if(empty($alias))
 			return($arr);
-			
+			 
 		try{
 			
 			$objAddon = new UniteCreatorAddon();
@@ -1414,6 +1415,18 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 				$name = UniteFunctionsDOUBLY::getVal($postListParam, "name");
 				$arr["ue_post_list_name"] = $name;
 			}
+			
+			$hasMultisource = $objAddon->hasMultisource();
+			
+			if($hasMultisource == true){
+				
+				$multisourceParam = $objAddon->getMultisourceParam();
+				
+				$name = UniteFunctionsDOUBLY::getVal($multisourceParam, "name");
+				
+				$arr["ue_multisource_param_name"] = $name;				
+			}
+			
 			
 			//get taxonomy param name
 			
@@ -1492,6 +1505,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 			
 		}
 		
+		
 		return($arr);		
 		
 	}
@@ -1514,6 +1528,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		}
 		
 		$arr = $this->modifyMetaArrayForExport_recursive($arr, $key);
+		
 		
 		if(self::DEBUG_META_ARRAY == true){
 			
@@ -1905,12 +1920,36 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		
 	}
 	
+	/**
+	 * add widget name to block
+	 */
+	private function checkBlockUEWidgetsExport($block){
+		
+		if($this->isUEInstalled == false)
+			return(false);
+		
+		$blockName = UniteFunctionsDOUBLY::getVal($block, "blockName");
+		
+		if(strpos($blockName, GlobalsDOUBLY::GUTENBERG_UE_PREFIX) === false)
+			return(false);
+			
+		$alias = str_replace(GlobalsDOUBLY::GUTENBERG_UE_PREFIX, "",  $blockName);
+
+		$alias = str_replace("-", "_", $alias);
+		
+		if(empty($alias))
+			return(false);
+		
+		$this->arrExportUEWidgets[$alias] = true;
+	}
+	
 	
 	/**
 	 * convert gutenberg block
 	 */
 	protected function convertGutenbergBlock($block){
 		
+		$this->checkBlockUEWidgetsExport($block);
 		
 		$name = UniteFunctionsDOUBLY::getVal($block, "blockName");
 		
@@ -1922,7 +1961,6 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 			}
 			
 		}
-		
 		
 		$attributes = UniteFunctionsDOUBLY::getVal($block, "attrs");
 		
@@ -1957,13 +1995,14 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 	 * convert gutenberg content
 	 */
 	private function convertGutenbergContent($content){
-		
+				
+		$hasBlocks = has_blocks($this->exportPost);
+				
 		if(has_blocks($this->exportPost) == false)
 			return($content);
 		
 		$arrBlocks = parse_blocks($content);
-		
-		
+				
 		if(empty($arrBlocks))
 			return($content);
 		
@@ -2334,7 +2373,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		$arrPost["comments"] = $arrCommentsOutput;
 		
 		$arrPost["attributes"] = $this->arrPostAttributes;
-				
+		
 		if($this->exportType == GlobalsDOUBLY::EXPORT_TYPE_UE_TEMPLATE)
 			$arrPost = $this->modifyExportUETemplate($arrPost);
 		
@@ -2375,6 +2414,22 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		
 	}
 	
+	/**
+	 * check if export type support elementor
+	 */
+	private function isExportTypeSupportElementor(){
+				
+		switch($this->exportType){
+			case GlobalsDOUBLY::EXPORT_TYPE_MEDIA:
+			case GlobalsDOUBLY::EXPORT_TYPE_OBJECTS:
+			case GlobalsDOUBLY::EXPORT_TYPE_SNIPPET:
+				return(false);
+			break;
+		}
+		
+		return(true);
+	}
+	
 	
 	/**
 	 * end export
@@ -2389,13 +2444,13 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		
 		//prepare the widgets
 		
-		$isExportTypeSupportElementor = $this->exportType == GlobalsDOUBLY::EXPORT_TYPE_POSTS || $this->exportType == GlobalsDOUBLY::EXPORT_TYPE_ELEMENTOR_SECTION;
+		$isExportTypeSupportElementor = $this->isExportTypeSupportElementor();
 		
 		if($isExportTypeSupportElementor && $this->isUEInstalled == true){
 			
 			$arrWidgets = array_keys($this->arrExportUEWidgets);
 			$arrWidgetsBG = array_keys($this->arrExportUEBackgrounds);
-
+	
 			$this->addToExportData("widgets", $arrWidgets);
 			$this->addToExportData("widgets_bg", $arrWidgetsBG);
 		}
@@ -2421,7 +2476,8 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 			
 			$this->arrExportContent["terms"] = array();
 		}
-				
+
+		
 		//write a content file
 		$contentText = serialize($this->arrExportContent);
 		$filepathContent = $this->pathExportContent."content.txt";
@@ -2754,6 +2810,15 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 	public function getExportedPosts(){
 		
 		return($this->arrExportedPosts);
+	}
+	
+	/**
+	 * get array of exported content
+	 */
+	public function getExportedContent(){
+		
+		
+		return($this->arrExportContent);
 	}
 	
 	

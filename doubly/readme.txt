@@ -3,7 +3,7 @@ Contributors: unitecms, valiano, iritmega, amitkeren
 Donate link: https://doubly.pro/
 Tags: cross domain, copy, paste, migrate, backup, duplicate, export, import, move, elementor, copy paste
 Requires at least: 3.5
-Tested up to: 6.6.2
+Tested up to: 6.8.3
 Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -98,6 +98,12 @@ Work faster with bulk actions. Copy multiple posts at a time with just one click
 
 == Changelog ==
 
+
+Version 1.0.47 - 23/12/2025
+
+* Fix - fixed section paste
+* Fix - fixed multisource copy from the unlimited elements website
+* Fix - fixed some security issue
 
 Version 1.0.46 - 05/02/2025
 

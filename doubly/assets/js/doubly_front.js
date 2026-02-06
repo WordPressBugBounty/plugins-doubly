@@ -7,9 +7,9 @@ function DOUBLY_Front(){
 	
 	var t = this, g_texts;
 	var g_showDebug = false;
+	 
 	
-	
-	var g_vars = {
+	var g_vars = { 
 		is_admin:false,
 		SUCCESS_MESSAGE_TIMEOUT: 2000,
 		ERROR_MESSAGE_TIMEOUT: 8000,
@@ -27,6 +27,7 @@ function DOUBLY_Front(){
 		CLASS_MAIN_LOADING:"doubly-main-loading",
 		CLASS_SECTIONS_ASK:"doubly-section-ask-action-mode",
 		CLASS_DISABLE_FRONT_COPY:"doubly-disable-copy-section",    
+		CLASS_DEBUG_KEY:"doubly-debug-key",
 		CLASS_IMAGE_REPLACED: "doubly-replaced-image",
 		CLASS_IMAGE_REPLACED_CONTROLLS: "doubly-replaced-image-controlls",
 		CLASS_IMAGE_REPLACED_CONTROLLS_EDIT_ICON: "doubly-replaced-image-controlls-edit-icon",
@@ -1614,6 +1615,12 @@ function DOUBLY_Front(){
 			if(copyMode)
 				objData.paste_mode = copyMode;
 			
+			//debug key send
+			if(g_objBody.hasClass(g_vars.CLASS_DEBUG_KEY)){
+				objData.debug_copied_content = true;
+				g_objBody.removeClass(g_vars.CLASS_DEBUG_KEY);
+			} 
+			
 			t.setState(g_vars.STATE_PASTING_POST);
 			showLoader(g_texts.loader_pasting_post_text);
 			
@@ -2501,6 +2508,41 @@ function DOUBLY_Front(){
 		
 	}
 	
+	function __________DEBUG_____________(){}
+	
+	/**
+	 * test copied content test
+	 */
+	function debug_testCopiedClick(event){
+		
+		event.preventDefault();
+		
+		var objLink = jQuery(this);
+				
+		g_objBody.addClass(g_vars.CLASS_DEBUG_KEY);
+		
+		onPasteClick();
+				
+	}
+	
+	
+	/**
+	 * init debug actions
+	 */
+	function initDebugActions(){
+		
+		var objTestCopied = jQuery("#wp-admin-bar-doubly_test_content");
+		
+		if(objTestCopied.length == 0)
+			return(false);
+		
+		var objLinkTestCopied = objTestCopied.find("a");
+		
+		objLinkTestCopied.on("click",debug_testCopiedClick);
+				
+		
+	}
+
 	
 	function __________INIT_____________(){}
 	
@@ -2681,6 +2723,8 @@ function DOUBLY_Front(){
 		
 		if(g_vars.state == state)
 			return(false);
+		
+		//trace("set state: "+state);
 		
 		var className = getStateClass(state);
 		
@@ -2873,7 +2917,10 @@ function DOUBLY_Front(){
 		
 		if(g_vars.is_admin)
 			initBulkActions();
-				
+		
+		//init debug actions
+		
+		initDebugActions();
 	}
 	
 	/**

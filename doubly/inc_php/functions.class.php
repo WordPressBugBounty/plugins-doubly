@@ -25,6 +25,9 @@ if(!defined("DOUBLY_INC")) die("restricted access");
 		 */
 		public static function throwError($message,$code=null){
 			
+			if(is_string($code) == true)
+				$code = null;
+			
 			if(!empty($code))
 				throw new Exception($message,$code);
 			else
@@ -1037,8 +1040,8 @@ if(!defined("DOUBLY_INC")) die("restricted access");
 						
 			//try to unserialize
 			
-			$arrOutput = @unserialize($str);
-			
+			$arrOutput = @unserialize($str, array('allowed_classes' => false));
+						
 			if(is_array($arrOutput))
 				return($arrOutput);
 			

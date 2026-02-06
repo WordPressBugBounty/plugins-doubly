@@ -171,6 +171,12 @@ class Doubly_AjaxActions{
 					$operations->exportPostFromData($data);
 					exit();
 				break;
+				case "export_ue_template":
+					HelperDOUBLY::validateCopyEnabled($action);
+					
+					$operations->exportPostFromData($data,GlobalsDOUBLY::EXPORT_TYPE_UE_TEMPLATE);
+					exit();
+				break;
 				case "export_elementor_section":
 					
 					HelperDOUBLY::validateCopyEnabled($action);
@@ -183,6 +189,12 @@ class Doubly_AjaxActions{
 					HelperDOUBLY::validateCopyEnabled($action);
 					
 					$operations->showPostData($data);
+					exit();
+				break;
+				case "show_export_data":
+					HelperDOUBLY::validateCopyEnabled($action);
+					
+					$operations->showPostExportData($data);
 					exit();
 				break;
 				case "copy_post":

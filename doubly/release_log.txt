@@ -1,5 +1,16 @@
 
 
+Version 1.0.48
+
+* Fix - fixed section paste
+* Fix - fixed multisource copy from the unlimited elements website
+* Fix - fixed some security issue
+
+
+Version 1.0.47
+
+* fix - add UE widgets with gutenberg export
+
 Version 1.0.46
 
 * Fix: fixed font importing

@@ -833,6 +833,10 @@ svg.doubly-button-copy-section__loading{
 	align-items:center;
 }
 
+.doubly-debug-key .doubly-front-top-panel{
+	background-color:#7a5f04;
+}
+
 .doubly-paste-dialog-mode .doubly-front-top-panel,
 .doubly-pasting-post-mode .doubly-front-top-panel,
 .doubly-copying-section-mode .doubly-front-top-panel,

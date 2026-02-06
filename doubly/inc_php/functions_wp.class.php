@@ -591,7 +591,18 @@ class UniteFunctionsWPDOUBLY{
 		
 		self::$isSvgUploadAllowed = true;
 	}
-
+	
+	/**
+	 * check if the user administrator
+	 */
+	public static function isCurrentUserAdministrator(){
+		
+		$isAdmin = current_user_can( 'administrator' );
+		
+		return($isAdmin);
+	}
+	
+	
 	private static function _______ATTACHMENTS________(){}
 	
 	

@@ -353,7 +353,7 @@ class Doubly_Operations{
 	/**
 	 * export post from data
 	 */
-	public function exportPostFromData($data){
+	public function exportPostFromData($data, $exportType = "posts"){
 		
 		$post = $this->getValiadatePostFromData($data);
 		
@@ -364,11 +364,11 @@ class Doubly_Operations{
 			
 			UniteFunctionsDOUBLY::validateIDsList($postID, "post ids");
 		}
-		
+				
 		$exportData = array();
-		$exportData["type"] = "posts";
+		$exportData["type"] = $exportType;
 		$exportData["postid"] = $postID;
-
+		
 		$objExporter = new Doubly_PluginExporter();
 		$filepathZip = $objExporter->exportPostFromData($exportData);
 		
@@ -564,11 +564,10 @@ class Doubly_Operations{
 		return($zipContent);
 	}
 	
-	
 	/**
-	 * get zip content from data
+	 * get content array from copy content text
 	 */
-	private function pastePostFromData_getZipContent($data, $isSection){
+	private function pastePostFromData_getArrContentFromData($data, $isSection = false){
 		
 		$copyContent = UniteFunctionsDOUBLY::getVal($data, "copy_text");
 				
@@ -578,19 +577,30 @@ class Doubly_Operations{
 		$keyContent = "doubly_";
 		
 		if($isSection == true)
-			$keyContent = "doubly_section";
+			$keyContent = "doubly_section_";
 		else
 			$copyContent = str_replace("doubly_multiple_", "doubly_", $copyContent);
 		
 		if(strpos($copyContent, $keyContent) === false)
-			UniteFunctionsDOUBLY::throwError("Wrong copy post data","doubly");
+			UniteFunctionsDOUBLY::throwError("Wrong copy post data");
 		
 		$copyContent = str_replace($keyContent, "", $copyContent);
 		
 		$arrContent = UniteFunctionsDOUBLY::decodeContent($copyContent);
-
+		
 		if(empty($arrContent))
-			UniteFunctionsDOUBLY::throwError("The copy data is invalid","doubly");
+			UniteFunctionsDOUBLY::throwError("The copy data is invalid");
+		
+		return($arrContent);
+	}
+	
+	
+	/**
+	 * get zip content from data
+	 */
+	private function pastePostFromData_getZipContent($data, $isSection){
+		
+		$arrContent = $this->pastePostFromData_getArrContentFromData($data, $isSection);
 		
 		$url = UniteFunctionsDOUBLY::getVal($arrContent, "url");
 		$key = UniteFunctionsDOUBLY::getVal($arrContent, "key");
@@ -601,7 +611,7 @@ class Doubly_Operations{
 		// call the server, get the zip
 		
 		$urlAjaxRemote = HelperDOUBLY::getUrlRemoteAjax($url, "get_copied_content","key=".$key);
-				
+		
 		$zipContent = UniteFunctionsDOUBLY::getUrlContents($urlAjaxRemote);
 				
 		if(empty(trim($zipContent)))
@@ -674,17 +684,24 @@ class Doubly_Operations{
 		
 	}
 	
+	
 	/**
 	 * paste post from data
 	 */
 	public function pastePostFromData($data, $isSection = false, $zipContent = null){
-		
+				
 		$isAdmin = UniteFunctionsDOUBLY::getVal($data, "isadmin");
 		$isAdmin = UniteFunctionsDOUBLY::strToBool($isAdmin);
 		
 		$postID = UniteFunctionsDOUBLY::getVal($data, "postid");
 		
 		$pasteMode = UniteFunctionsDOUBLY::getVal($data, "paste_mode");
+		
+		$debugCopiedContent = UniteFunctionsDOUBLY::getVal($data, "debug_copied_content");
+		$debugCopiedContent = UniteFunctionsDOUBLY::strToBool($debugCopiedContent);
+		
+		if($debugCopiedContent == true)
+			$this->debugCopiedContent($data);
 		
 		$isObject = false;
 		
@@ -694,7 +711,7 @@ class Doubly_Operations{
 		}
 		
 		if(empty($postID))
-			UniteFunctionsDOUBLY::throwError(__("Destanation post not found","doubly"));
+			UniteFunctionsDOUBLY::throwError(__("Destanation post not found"));
 		
 		if($isSection == true){
 			
@@ -718,7 +735,7 @@ class Doubly_Operations{
 				$post = get_post($postID);
 				
 				if(empty($post))
-					UniteFunctionsDOUBLY::throwError("No post destanation found","doubly");
+					UniteFunctionsDOUBLY::throwError("No post destanation found");
 			}
 			
 		}else
@@ -815,17 +832,106 @@ class Doubly_Operations{
 		HelperDOUBLY::ajaxResponseSuccess($successText, $arrOutput);
 	}
 	
+	private function _____DEBUG________(){}
+	
+	/**
+	 * debug copied content on this site
+	 */
+	private function debugCopiedContent($data){
 		
+		if(GlobalsDOUBLY::$showDebugMenu == false)
+			UniteFunctionsDOUBLY::throwError("No debug available");
+		
+		if(UniteFunctionsWPDOUBLY::isCurrentUserAdministrator() == false)
+			UniteFunctionsDOUBLY::throwError("Operation not allowed for this user");
+		
+		$arrContent = $this->pastePostFromData_getArrContentFromData($data, false);
+		
+		$url = UniteFunctionsDOUBLY::getVal($arrContent, "url");
+		$key = UniteFunctionsDOUBLY::getVal($arrContent, "key");
+		
+		$copyData = $this->getSavedCopyDataFromKey($key);
+		
+		$objExporter = new Doubly_PluginExporter();
+		$objExporter->exportPostFromData($copyData);
+		
+		$arrExportedContent = $objExporter->getExportedContent();
+		
+		dmp("Copy Data");
+		dmp($copyData);
+		
+		
+		dmp("Exported Content!");
+		dmp($arrExportedContent);
+		exit();
+		
+		
+	}
+	
+	/**
+	 * show post data from data
+	 */
+	public function showPostData($data){
+		
+		if(GlobalsDOUBLY::$showDebugMenu == false)
+			UniteFunctionsDOUBLY::throwError("function not available");
+		
+		$postID = UniteFunctionsDOUBLY::getVal($data, "postid");
+		UniteFunctionsDOUBLY::validateNotEmpty($postID,"post id");
+		
+		$this->showPost($postID);
+		
+	}
+	
+	/**
+	 * show post export data
+	 */
+	public function showPostExportData($data){
+		
+		if(GlobalsDOUBLY::$showDebugMenu == false)
+			UniteFunctionsDOUBLY::throwError("function not available");
+		
+		$postID = UniteFunctionsDOUBLY::getVal($data, "postid");
+		UniteFunctionsDOUBLY::validateNotEmpty($postID,"post id");
+		
+		$post = get_post($postID);
+		
+		$postType = $post->post_type;
+		
+		$type = "posts";
+		
+		if($postType == GlobalsDOUBLY::POST_TYPE_UE_TEMPLATE)
+			$type = GlobalsDOUBLY::EXPORT_TYPE_UE_TEMPLATE;
+		
+		$copyData = array();
+		$copyData["postid"] = $postID;
+		$copyData["type"] = $type;
+		
+		
+		$objExporter = new Doubly_PluginExporter();
+		$objExporter->exportPostFromData($copyData);
+		
+		$arrExportedContent = $objExporter->getExportedContent();
+		
+		
+		dmp("post type");
+		dmp($postType);
+		
+		dmp("Copy Data!");
+		dmp($copyData);
+		
+		dmp("Post Export data Exported Content!");
+		dmp($arrExportedContent);
+		exit();
+	}
+	
 	
 	private function _____OTHERS________(){}
 	
 	/**
-	 * get copied content from data
+	 * get saved copy data from key
 	 */
-	public function getCopiedZipContentFromData($data){
-		
-		$key = UniteFunctionsDOUBLY::getVal($data, "key");
-		UniteFunctionsDOUBLY::validateNotEmpty($key, "Key");
+	private function getSavedCopyDataFromKey($key){
 		
 		$transientName = "doubly_copy_{$key}";
 				
@@ -836,6 +942,19 @@ class Doubly_Operations{
 		
 		//delete the transiend, don't allow to copy twice
 		delete_transient($transientName);
+		
+		return($copyData);
+	}
+	
+	/**
+	 * get copied content from data
+	 */
+	public function getCopiedZipContentFromData($data){
+		
+		$key = UniteFunctionsDOUBLY::getVal($data, "key");
+		UniteFunctionsDOUBLY::validateNotEmpty($key, "Key");
+		
+		$copyData = $this->getSavedCopyDataFromKey($key);
 		
 		$type = UniteFunctionsDOUBLY::getVal($copyData, "type");
 		
@@ -948,20 +1067,6 @@ class Doubly_Operations{
 	}
 	
 	
-	/**
-	 * show post data from data
-	 */
-	public function showPostData($data){
-		
-		if(GlobalsDOUBLY::$showDebugMenu == false)
-			UniteFunctionsDOUBLY::throwError("function not available");
-		
-		$postID = UniteFunctionsDOUBLY::getVal($data, "postid");
-		UniteFunctionsDOUBLY::validateNotEmpty($postID,"post id");
-		
-		$this->showPost($postID);
-		
-	}
 	
 	/**
 	 * modify string for show

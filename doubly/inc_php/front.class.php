@@ -331,7 +331,6 @@ class Doubly_PluginFront extends Doubly_PluginCommon{
 		if(GlobalsDOUBLY::$enableCopy == false && GlobalsDOUBLY::$enablePaste == false && GlobalsDOUBLY::$enableFrontCopy == false)
 			return(false);
 
-		
 		$this->initCommon();
 		
 		//if both are false, no operation is enabled as well
@@ -353,7 +352,7 @@ class Doubly_PluginFront extends Doubly_PluginCommon{
 		
 		$this->isAdmin = false;
 		
-		add_action("plugins_loaded",array($this,"onWPInit"));
+		add_action("init",array($this,"onWPInit"));
 						
 	}
 	

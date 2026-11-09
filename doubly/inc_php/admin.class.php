@@ -199,7 +199,7 @@ class Doubly_PluginAdmin extends Doubly_PluginCommon{
 		
 		if(GlobalsDOUBLY::$inDev == false)
 			return($arrActions);
-				
+		
 		//in free version - limit to post only
 		if(GlobalsDOUBLY::$isProActive == false){
 			

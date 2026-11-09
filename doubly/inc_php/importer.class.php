@@ -1670,8 +1670,9 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		if(empty($this->lastImportedPostID))
 			$this->lastImportedPostID = $postID;
 		
-		//in case of elementor post
+		//clear cache
 		HelperDOUBLY::removeElementorPostCacheFile($postID);
+		HelperDOUBLY::clearElementorPostObjectCache($postID);
 		
 		return($postID);
 	}
@@ -1754,7 +1755,6 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 	 */
 	private function insertElementorSectionToLayout($arrPageLayout, $arrSection){
 
-		
 		if(empty($arrPageLayout))
 			$arrPageLayout = array();
 		
@@ -1763,8 +1763,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 				
 		$arrPageLayoutNEW = array();
 		$isInserted = false;
-		
-		
+				
 		//insert new section
 		if($this->param_importToSectionID == "new" && empty($arrPageLayout)){
 			
@@ -1807,7 +1806,6 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		
 		if($isInserted == false)
 			UniteFunctionsDOUBLY::throwError("Section not inserted, before or after section not found");
-		
 		
 		return($arrPageLayoutNEW);
 	}
@@ -1869,6 +1867,7 @@ class Doubly_PluginImporter extends Doubly_PluginExporterBase{
 		
 		//clear cache
 		HelperDOUBLY::removeElementorPostCacheFile($postID);
+		HelperDOUBLY::clearElementorPostObjectCache($postID);
 		
 	}
 	

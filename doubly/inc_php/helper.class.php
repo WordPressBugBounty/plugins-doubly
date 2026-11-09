@@ -800,6 +800,53 @@ class HelperDOUBLY{
 	}
 	
 	
+	/**
+	 * clear elementor post object cache (element cache meta)
+	 */
+	public static function clearElementorPostObjectCache($postID){
+		
+		if(self::isElementorInstalled() == false)
+			return(false);
+		
+		if(empty($postID))
+			return(false);
+		
+		try{
+			
+			if(class_exists("\Elementor\Plugin") == false)
+				return(false);
+			
+			$plugin = \Elementor\Plugin::$instance;
+			
+			if(empty($plugin) || empty($plugin->documents))
+				return(false);
+			
+			if(method_exists($plugin->documents, "get") == false)
+				return(false);
+			
+			$document = $plugin->documents->get($postID, false);
+			
+			if(empty($document))
+				return(false);
+			
+			if(class_exists("\Elementor\Core\Base\Document") == false)
+				return(false);
+			
+			if(method_exists($document, "delete_meta") == false)
+				return(false);
+			
+			$document->delete_meta(\Elementor\Core\Base\Document::CACHE_META_KEY);
+			
+		}catch(Exception $e){
+			return(false);
+		}catch(Throwable $e){
+			return(false);
+		}
+		
+		return(true);
+	}
+	
+	
 	private static function __________URL_FUNCTIONS__________(){}
 	
 	

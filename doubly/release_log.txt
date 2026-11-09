@@ -5,6 +5,7 @@ Version 1.0.48
 * Fix - fixed section paste
 * Fix - fixed multisource copy from the unlimited elements website
 * Fix - fixed some security issue
+* Fix - done refresh elementor object cache after pasting content. if fixes the content that not visible in the page
 
 
 Version 1.0.47

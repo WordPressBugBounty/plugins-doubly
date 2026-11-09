@@ -165,6 +165,7 @@ function DOUBLY_Front(){
 		
 		objDebug.show();
 		
+		str += "<a href='javascript:void(0)' class='doubly-debug-copy'>Copy</a>";
 		str += "<a href='javascript:void(0)' class='doubly-debug-close'>X</a>";
 		
 		objDebug.html(str);
@@ -172,6 +173,45 @@ function DOUBLY_Front(){
 		var objButton = objDebug.find(".doubly-debug-close");
 		objButton.on("click", function(){
 			objDebug.hide();
+		});
+
+		var objCopyButton = objDebug.find(".doubly-debug-copy");
+		objCopyButton.on("click", function(){
+			var objCurrentButton = jQuery(this);
+			var debugText = jQuery.trim(
+				objDebug
+					.clone()
+					.find(".doubly-debug-close, .doubly-debug-copy")
+					.remove()
+					.end()
+					.text()
+			);
+
+			if(debugText.length == 0)
+				return(false);
+
+			function markCopied(){
+				objCurrentButton.text("Copied");
+				setTimeout(function(){
+					objCurrentButton.text("Copy");
+				}, 1200);
+			}
+
+			if(navigator.clipboard && navigator.clipboard.writeText){
+				navigator.clipboard.writeText(debugText).then(function(){
+					markCopied();
+				});
+				return(false);
+			}
+
+			var textarea = jQuery("<textarea>").val(debugText).appendTo("body");
+			textarea.trigger("focus");
+			textarea.trigger("select");
+			document.execCommand("copy");
+			textarea.remove();
+			markCopied();
+			
+			return(false);
 		});
 		
 	}

@@ -972,9 +972,15 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		}
 		
 		//init addon
-		
-		$objAddon = new UniteCreatorAddon();
-		$objAddon->initByAlias($alias, $addonType);
+		try{
+			
+			$objAddon = new UniteCreatorAddon();
+			$objAddon->initByAlias($alias, $addonType);
+			
+		}catch(Exception $e){
+			
+			return(false);
+		}
 		
 		//export
 		
@@ -983,6 +989,7 @@ class Doubly_PluginExporter extends Doubly_PluginExporterBase{
 		
 		$objAddonExporter->initByAddon($objAddon);
 		$objAddonExporter->export($pathExport, true);
+		
 		
 	}
 	

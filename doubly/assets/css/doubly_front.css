@@ -62,7 +62,17 @@
 	font-weight:bold;
 }
 
-.doubly-div-debug .doubly-debug-close:hover{
+.doubly-front-debug .doubly-debug-copy{
+	position:absolute;
+	top:0px;
+	right:25px;
+	padding:5px;
+	text-decoration:none !important;
+	font-weight:bold;
+}
+
+.doubly-front-debug .doubly-debug-close:hover,
+.doubly-front-debug .doubly-debug-copy:hover{
 	background-color:#D5D5D5;
 }
 

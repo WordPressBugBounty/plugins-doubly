@@ -4,7 +4,7 @@ Plugin Name: Doubly
 Plugin URI: http://doubly.pro
 Description: Copy, Paste, Export, Import pages and elementor sections between domains
 Author: Unlimited Elements
-Version: 1.0.47
+Version: 1.0.48
 */
 
 if(!defined("DOUBLY_INC"))
